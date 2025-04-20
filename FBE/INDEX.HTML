@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MISS FACULTY OF BUSINESS EDUCATION 2025</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .candidate {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+        }
+        .vote-count {
+            font-weight: bold;
+            color: #e91e63;
+        }
+        .vote-form input {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        .vote-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>MISS FACULTY OF BUSINESS EDUCATION 2025</h1>
+    <h2>Vote for your favorite contestant (0.70 GHS per vote)</h2>
+    
+    <div class="category">
+        <h3>contestant ONE </h3>
+        <div class="candidates">
+            
+            <div class="candidate" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url }}" width="150" height="150" style="object-fit: cover;">
+                
+                <h4>AMA CONSTANCE</h4>
+                <p>Votes: <span class="vote-count"> ()</span></p> <br><br>
+                <p>Revenue: <span class="revenue">0.00 GHS</span></p>
+                
+                <form class="vote-form">
+                    <input type="tel" name="phone_number" placeholder="MTN Mobile Money Number" required>
+                    <button type="submit">Vote Now (0.70 GHS)</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>contestant two </h3>
+        <div class="candidates">
+            
+            <div class="candidate" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url }}" width="150" height="150" style="object-fit: cover;">
+                
+                <h4>Yaa Lotty</h4>
+                <p>Votes: <span class="vote-count"> ()</span></p> <br><br>
+                <p>Revenue: <span class="revenue">0.00 GHS</span></p>
+                
+                <form class="vote-form">
+                    <input type="tel" name="phone_number" placeholder="MTN Mobile Money Number" required>
+                    <button type="submit">Vote Now (0.70 GHS)</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>contestant Three </h3>
+        <div class="candidates">
+            
+            <div class="candidate" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url }}" width="150" height="150" style="object-fit: cover;">
+                
+                <h4>Yaa Shantel</h4>
+                <p>Votes: <span class="vote-count"> ()</span></p> <br><br>
+                <p>Revenue: <span class="revenue">0.00 GHS</span></p>
+                
+                <form class="vote-form">
+                    <input type="tel" name="phone_number" placeholder="MTN Mobile Money Number" required>
+                    <button type="submit">Vote Now (0.70 GHS)</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="category">
+        <h3>contestant four </h3>
+        <div class="candidates">
+            
+            <div class="candidate" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url }}" width="150" height="150" style="object-fit: cover;">
+                
+                <h4>Christy</h4>
+                <p>Votes: <span class="vote-count"> ()</span></p> <br><br>
+                <p>Revenue: <span class="revenue">0.00 GHS</span></p>
+                
+                <form class="vote-form">
+                    <input type="tel" name="phone_number" placeholder="MTN Mobile Money Number" required>
+                    <button type="submit">Vote Now (0.70 GHS)</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>contestant five </h3>
+        <div class="candidates">
+            
+            <div class="candidate" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url }}" width="150" height="150" style="object-fit: cover;">
+                
+                <h4>Afia Doreen</h4>
+                <p>Votes: <span class="vote-count"> ()</span></p> <br><br>
+                <p>Revenue: <span class="revenue">0.00 GHS</span></p>
+                
+                <form class="vote-form">
+                    <input type="tel" name="phone_number" placeholder="MTN Mobile Money Number" required>
+                    <button type="submit">Vote Now (0.70 GHS)</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+
+
+    $(document).ready(function() {
+        // Handle voting
+        $('.vote-form').submit(function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const candidateDiv = form.closest('.candidate');
+            const candidateId = candidateDiv.data('id');
+            const phoneNumber = form.find('input[name="phone_number"]').val();
+            
+            if(!phoneNumber.match(/^(0|\+233)[2-9]\d{8}$/)) {
+                alert('Please enter a valid MTN Mobile Money number');
+                return;
+            }
+            
+            $.post(/vote/${candidateId}/, {phone_number: phoneNumber}, function(data) {
+                if(data.status === 'success') {
+                    candidateDiv.find('.vote-count').text(data.total_votes);
+                    alert(Vote successful! Transaction ID: ${data.transaction_id});
+                    form.find('input').val('');
+                } else {
+                    alert('Vote failed. Please try again.');
+                }
+            }).fail(function() {
+                alert('Error processing vote. Please try again.');
+            });
+        });
+
+        // Live updates
+        function updateResults() {
+            $.get('/live_results/', function(data) {
+                for(const [id, candidate] of Object.entries(data)) {
+                    $(.candidate[data-id="${id}"] .vote-count).text(candidate.votes);
+                    $(.candidate[data-id="${id}"] .revenue).text(candidate.revenue.toFixed(2) + ' GHS');
+                }
+            });
+        }
+        
+        setInterval(updateResults, 3000); // Update every 3 seconds
+    });
+    </script>
+</body>
+</html>
